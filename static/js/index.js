@@ -1,34 +1,111 @@
 'use strict';
 
 class Field extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {color: "white", fieldTime: 0};
+    }
+
+    tick() {
+        this.setState({
+            fieldTime: this.state.fieldTime - 1
+        });
+
+        switch (this.state.fieldTime) {
+            case 40:
+                this.setState({
+                    color: "green"
+                });
+                break;  
+            case 30:
+                this.setState({
+                    color: "yellow"
+                });
+                break; 
+            case 20:
+                this.setState({
+                    color: "red"
+                });
+                break; 
+            case 0:
+                this.setState({
+                    color: "brown"
+                });
+        };
+    }
+
+    handleFieldClicked(){
+        if (this.state.color == "white"){
+            if (this.props.money > 0) {
+                this.setState({color: "black"});
+                this.props.incrementMoney(-2);
+
+                this.setState({
+                    fieldTime: 50
+                });
+
+                this.interval = setInterval(() => this.tick(), 1000 / this.props.speed);
+            }
+        }
+        else if (this.state.color == "black") {
+            // just pass
+        }
+        else if (this.state.color == "green") {
+            // just pass
+        }
+        else if (this.state.color == "yellow") {
+            this.setState({color: "white"});
+            this.props.incrementMoney(3);
+            clearInterval(this.interval);
+        }
+        else if (this.state.color == "red") {
+            this.setState({color: "white"});
+            this.props.incrementMoney(5);
+            clearInterval(this.interval);
+        }
+        else if (this.state.color == "brown") {
+            this.setState({color: "white"});
+            this.props.incrementMoney(-1);
+            clearInterval(this.interval);
+        }
+    }
+
     render() {
         return (
-            <div className="col field"></div>
+            <div className="col field" style={{background: this.state.color}} onClick={this.handleFieldClicked.bind(this)}></div>
         )
     }
 }
 
 class Row extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         return (
             <div className="row">
-                <Field />
-                <Field />
-                <Field />
-                <Field />
+                <Field money={this.props.money} speed={this.props.speed} incrementMoney={this.props.incrementMoney} />
+                <Field money={this.props.money} speed={this.props.speed} incrementMoney={this.props.incrementMoney} />
+                <Field money={this.props.money} speed={this.props.speed} incrementMoney={this.props.incrementMoney} />
+                <Field money={this.props.money} speed={this.props.speed} incrementMoney={this.props.incrementMoney} />
             </div>
         )
     }
 }
 
 class Farm extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         return (
             <div className="mt-2">
-                <Row />
-                <Row />
-                <Row />
-                <Row />
+                <Row money={this.props.money} speed={this.props.speed} incrementMoney={this.props.incrementMoney} />
+                <Row money={this.props.money} speed={this.props.speed} incrementMoney={this.props.incrementMoney} />
+                <Row money={this.props.money} speed={this.props.speed} incrementMoney={this.props.incrementMoney} />
+                <Row money={this.props.money} speed={this.props.speed} incrementMoney={this.props.incrementMoney} />
             </div>
         )
     }
@@ -146,7 +223,7 @@ class CurrentTime extends React.Component {
 class Game extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {time : 0, money: 100, speed: 1};
+        this.state = {time: 0, money: 100, speed: 1};
     }
 
     incrementTime(amount) {
@@ -170,8 +247,8 @@ class Game extends React.Component {
     render() {
         return (
             <div className="container-md">
-                <Menu money={this.state.money} speed={this.state.speed} incrementSpeed={this.incrementSpeed.bind(this)}/>
-                <Farm />
+                <Menu money={this.state.money} speed={this.state.speed} incrementSpeed={this.incrementSpeed.bind(this)} />
+                <Farm money={this.state.money} speed={this.state.speed} incrementMoney={this.incrementMoney.bind(this)} />
                 <CurrentTime time={this.state.time} speed={this.state.speed} incrementTime={this.incrementTime.bind(this)} />
             </div>
         )
