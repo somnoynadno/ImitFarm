@@ -3,7 +3,7 @@
 class Field extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {color: "white", fieldTime: 0};
+        this.state = {color: "white", fieldTime: -1};
     }
 
     tick() {
@@ -34,17 +34,18 @@ class Field extends React.Component {
         };
     }
 
+    componentDidUpdate() {
+        clearInterval(this.interval);
+        this.interval = setInterval(() => this.tick(), 1000 / this.props.speed);
+    }
+
     handleFieldClicked(){
         if (this.state.color == "white"){
             if (this.props.money > 0) {
-                this.setState({color: "black"});
-                this.props.incrementMoney(-2);
-
                 this.setState({
-                    fieldTime: 50
+                    fieldTime: 50, color: "black"
                 });
-
-                this.interval = setInterval(() => this.tick(), 1000 / this.props.speed);
+                this.props.incrementMoney(-2);
             }
         }
         else if (this.state.color == "black") {
@@ -54,19 +55,16 @@ class Field extends React.Component {
             // just pass
         }
         else if (this.state.color == "yellow") {
-            this.setState({color: "white"});
+            this.setState({color: "white", fieldTime : -1});
             this.props.incrementMoney(3);
-            clearInterval(this.interval);
         }
         else if (this.state.color == "red") {
-            this.setState({color: "white"});
+            this.setState({color: "white", fieldTime : -1});
             this.props.incrementMoney(5);
-            clearInterval(this.interval);
         }
         else if (this.state.color == "brown") {
-            this.setState({color: "white"});
+            this.setState({color: "white", fieldTime : -1});
             this.props.incrementMoney(-1);
-            clearInterval(this.interval);
         }
     }
 
@@ -199,8 +197,6 @@ class CurrentTime extends React.Component {
     }
     
     componentDidUpdate() {
-        // возможно, это костыль
-        // зато это работает
         clearInterval(this.interval);
         this.interval = setInterval(() => this.tick(), 1000 / this.props.speed);
     }
